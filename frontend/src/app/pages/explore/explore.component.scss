@@ -1,0 +1,532 @@
+.explore-container {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 80px);
+  /* Desktop */
+  overflow: hidden;
+  background-color: #f8f9fa;
+
+  @media (max-width: 768px) {
+    height: calc(100vh - 60px);
+    /* Mobile header is shorter without search */
+  }
+}
+
+.map-search {
+  position: absolute;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 0.4rem;
+  width: 90%;
+  max-width: 350px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+
+  input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background: transparent;
+    font-family: inherit;
+    color: var(--text-dark);
+
+    &::placeholder {
+      color: #a4b0be;
+    }
+  }
+
+  button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: var(--primary-dark);
+      transform: scale(1.05);
+    }
+  }
+}
+
+.map-wrapper {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  /* Map base layer */
+}
+
+/* Glassmorphism Header Overlay */
+.explore-header {
+  position: absolute;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  /* Above Leaflet controls */
+  padding: 1rem 2rem;
+  border-radius: 20px;
+  text-align: center;
+  pointer-events: none;
+  /* Let clicks pass through to map */
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  p {
+    margin: 0.5rem 0 0;
+    font-size: 1rem;
+    color: var(--text-dark);
+    font-weight: 500;
+  }
+}
+
+/* Custom Marker Styling (Defined in TS but styled here) */
+::ng-deep .custom-map-marker {
+  position: relative;
+
+  .marker-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .marker-pin {
+    width: 36px;
+    height: 36px;
+    border-radius: 50% 50% 50% 0;
+    background: var(--primary-color);
+    position: absolute;
+    transform: rotate(-45deg);
+    left: 50%;
+    top: 50%;
+    margin: -18px 0 0 -18px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    border: 3px solid white;
+    transition: all 0.3s ease;
+    cursor: pointer;
+
+    &:hover {
+      transform: rotate(-45deg) scale(1.2);
+      background: var(--primary-dark);
+    }
+  }
+
+  .marker-number {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    left: 50%;
+    top: 50%;
+    margin: -18px 0 0 -18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dark);
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: -0.5px;
+    z-index: 10;
+    pointer-events: none;
+    /* Let clicks pass to pin */
+    padding-bottom: 6px;
+    /* Offset because of the pin shape */
+  }
+
+  .marker-pulse {
+    width: 14px;
+    height: 14px;
+    background: rgba(var(--primary-color-rgb), 0.5);
+    border-radius: 50%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: 7px 0 0 -7px;
+    animation: pulsate 1.5s ease-out infinite;
+    pointer-events: none;
+  }
+}
+
+::ng-deep .custom-map-marker.is-highlighted {
+  z-index: 1000 !important;
+
+  .marker-wrapper {
+    animation: marker-jump 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite alternate;
+  }
+
+  .marker-pin {
+    transform: rotate(-45deg) scale(1.2);
+  }
+
+  .marker-number {
+    transform: scale(1.2);
+  }
+
+  .marker-pulse {
+    transform: scale(1.5);
+  }
+}
+
+@keyframes marker-jump {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes pulsate {
+  0% {
+    transform: scale(0.1, 0.1);
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(3.5, 3.5);
+    opacity: 0;
+  }
+}
+
+/* Detail Panel Overlay (Glassmorphism) */
+.detail-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  max-width: 450px;
+  height: 100%;
+  z-index: 2000;
+  padding: 1.5rem;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+  /* Only panel-inner has pointer events */
+
+  &.open {
+    transform: translateX(0);
+  }
+
+  .panel-inner {
+    height: 100%;
+    border-radius: 24px;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    pointer-events: auto;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.95);
+    /* Make it less transparent */
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+
+    &:hover {
+      background: white;
+      transform: scale(1.1);
+      color: var(--primary-color);
+    }
+  }
+
+
+
+  @keyframes attention-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(251, 197, 49, 0.7);
+    }
+
+    70% {
+      box-shadow: 0 0 0 15px rgba(251, 197, 49, 0);
+    }
+
+    100% {
+      box-shadow: 0 0 0 0 rgba(251, 197, 49, 0);
+    }
+  }
+
+  .panel-content {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+
+    /* Hide scrollbar */
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .image-gallery {
+    height: 250px;
+    position: relative;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+
+      &.main-img {
+        opacity: 1;
+        position: relative;
+      }
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+    }
+  }
+
+  .info-section {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    /* Less transparent */
+    flex: 1;
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      margin: 0;
+      line-height: 1.3;
+    }
+
+    .rating-address {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      .address-container {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: #fdfaf6;
+        padding: 0.75rem;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+
+        .map-icon-btn {
+          flex-shrink: 0;
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: var(--primary-color);
+          color: white;
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(251, 197, 49, 0.4);
+          animation: attention-pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+
+          &:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+            animation: none;
+          }
+        }
+
+        .address-text {
+          color: var(--text-dark);
+          font-size: 0.9rem;
+          line-height: 1.4;
+          font-weight: 500;
+        }
+      }
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(0, 0, 0, 0.1);
+      margin: 0.5rem 0;
+    }
+
+    .review-section {
+      h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+        color: var(--primary-color);
+      }
+
+      .review-text {
+        font-style: italic;
+        color: var(--text-dark);
+        line-height: 1.6;
+        margin: 0;
+        background: rgba(255, 255, 255, 0.5);
+        padding: 1rem;
+        border-radius: 12px;
+        border-left: 4px solid var(--accent-color);
+      }
+    }
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .explore-header {
+    width: 90%;
+    top: 1rem;
+    padding: 0.75rem 1rem;
+
+    h1 {
+      font-size: 1.5rem;
+    }
+
+    p {
+      font-size: 0.85rem;
+    }
+  }
+
+  .detail-panel {
+    max-width: 100%;
+    padding: 0;
+    top: auto;
+    bottom: 0;
+    height: auto;
+    max-height: 55vh;
+    transform: translateY(100%) translateX(0);
+
+    &.open {
+      transform: translateY(0) translateX(0);
+    }
+
+    .panel-inner {
+      border-radius: 28px 28px 0 0;
+      box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.15);
+      border: none;
+    }
+
+    .close-btn {
+      top: 10px;
+      right: 10px;
+      width: 32px;
+      height: 32px;
+      background: rgba(0, 0, 0, 0.4);
+      color: white;
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    .image-gallery {
+      height: 120px;
+
+      /* Drag handle indicator */
+      &::before {
+        content: '';
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 10px;
+        z-index: 20;
+      }
+    }
+
+    .info-section {
+      padding: 1.25rem;
+
+      h2 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .address-container {
+        background: transparent;
+        border: none;
+        padding: 0;
+        margin-bottom: 0.5rem;
+
+        .map-icon-btn {
+          width: 36px;
+          height: 36px;
+        }
+      }
+
+      .review-section {
+        h3 {
+          font-size: 1rem;
+        }
+
+        .review-text {
+          font-size: 0.9rem;
+          padding: 0.75rem;
+        }
+      }
+    }
+  }
+}

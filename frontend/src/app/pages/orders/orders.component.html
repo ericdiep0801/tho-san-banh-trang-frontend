@@ -1,0 +1,42 @@
+<div class="page-container">
+  <h1 class="page-title">Lịch Sử Mua Hàng</h1>
+
+  <div *ngIf="!isLoading && orders.length === 0" class="empty-orders text-center">
+    <p>Bạn chưa có đơn hàng nào.</p>
+    <button class="btn-primary mt-1" routerLink="/products">Mua sắm ngay</button>
+  </div>
+
+  <div *ngIf="isLoading" class="orders-list">
+    <div class="order-card glass-card" *ngFor="let i of skeletonArray" style="margin-bottom: 15px; padding: 20px;">
+      <div class="skeleton skeleton-text" style="width: 40%; height: 25px;"></div>
+      <div class="skeleton skeleton-text" style="width: 20%; height: 15px;"></div>
+      <div class="skeleton skeleton-img" style="height: 80px; margin-top: 15px; border-radius: 8px;"></div>
+    </div>
+  </div>
+
+  <div class="orders-list" *ngIf="!isLoading && orders.length > 0">
+    <div class="order-card glass-card" *ngFor="let order of orders">
+      <div class="order-header">
+        <div>
+          <h3>Đơn hàng: #{{ order.id }}</h3>
+          <p class="date">{{ order.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+        </div>
+        <div class="status-badge">{{ order.status }}</div>
+      </div>
+
+      <div class="order-items">
+        <div class="order-item" *ngFor="let item of order.items">
+          <img [src]="item.image || 'assets/hero_bag.png'" [alt]="item.name">
+          <div class="item-info">
+            <h4>{{ item.name }}</h4>
+            <p>Số lượng: {{ item.quantity }} x {{ item.price | number }}₫</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-footer">
+        <p><strong>Tổng tiền:</strong> <span class="total-price">{{ order.totalAmount | number }}₫</span></p>
+      </div>
+    </div>
+  </div>
+</div>

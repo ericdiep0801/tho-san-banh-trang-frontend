@@ -1,0 +1,35 @@
+<div class="modal-overlay" (click)="close.emit()">
+  <div class="modal-content glass-card" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="close.emit()">×</button>
+    
+    <div class="auth-header">
+      <h2>Chào mừng bạn!</h2>
+      <p>Đăng nhập để nhận ưu đãi và lưu giỏ hàng</p>
+    </div>
+
+    <div *ngIf="step === 1" class="auth-form">
+      <div class="form-group">
+        <label>Số điện thoại</label>
+        <input type="tel" [(ngModel)]="phone" placeholder="Nhập số điện thoại..." class="form-control" (keyup.enter)="sendOtp()">
+      </div>
+      <button class="btn-primary full-width" [class.btn-loading]="isLoading" (click)="sendOtp()">
+        <span class="btn-text">Gửi mã OTP</span>
+        <div class="spinner spinner-dark" *ngIf="isLoading"></div>
+      </button>
+      <p class="error-msg" *ngIf="error">{{ error }}</p>
+    </div>
+
+    <div *ngIf="step === 2" class="auth-form">
+      <div class="form-group">
+        <label>Mã xác nhận (OTP)</label>
+        <input type="text" [(ngModel)]="otp" placeholder="Nhập mã 6 số..." class="form-control" (keyup.enter)="verifyOtp()">
+        <small class="help-text">Mã OTP đã được gửi đến số {{ phone }}</small>
+      </div>
+      <button class="btn-primary full-width" [class.btn-loading]="isLoading" (click)="verifyOtp()">
+        <span class="btn-text">Xác nhận</span>
+        <div class="spinner spinner-dark" *ngIf="isLoading"></div>
+      </button>
+      <p class="error-msg" *ngIf="error">{{ error }}</p>
+    </div>
+  </div>
+</div>

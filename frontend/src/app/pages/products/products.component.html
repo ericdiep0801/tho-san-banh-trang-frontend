@@ -1,0 +1,100 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">Sản Phẩm Của Chúng Tôi</h1>
+    <p class="page-subtitle">Khám phá thế giới bánh tráng Tây Ninh phong phú, đậm vị</p>
+  </div>
+
+  <div class="products-layout">
+    <!-- Sidebar: Filters -->
+    <aside class="sidebar">
+      <div class="filter-box">
+        <h3>Danh Mục</h3>
+        <ul class="category-list">
+          <li *ngFor="let cat of categories" 
+              [class.active]="selectedCategory === cat"
+              (click)="selectCategory(cat)">
+            <span class="cat-name">{{ cat === 'All' ? 'Tất cả sản phẩm' : cat }}</span>
+            <span class="cat-icon">›</span>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Content: Grid & Pagination -->
+    <div class="main-content">
+      
+      <!-- Top Toolbar -->
+      <div class="toolbar">
+        <div class="results-info">
+          Hiển thị <strong>{{ products.length }}</strong> trên tổng <strong>{{ totalItems }}</strong> sản phẩm
+        </div>
+        
+        <div class="controls">
+          <label for="perPage">Hiển thị:</label>
+          <select id="perPage" class="form-control" (change)="changeLimit($event)">
+            <option *ngFor="let opt of pageSizeOptions" [value]="opt" [selected]="opt === pageSize">{{ opt }}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoading && products.length === 0" class="empty-state">
+        <p>Không tìm thấy sản phẩm nào phù hợp.</p>
+      </div>
+
+      <!-- Skeletons -->
+      <div class="products-grid" *ngIf="isLoading">
+        <div *ngFor="let i of skeletonArray" class="product-card">
+          <div class="product-image" style="background: var(--bg-white);">
+            <div class="skeleton skeleton-img" style="height: 100%; border-radius: 12px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;"></div>
+          </div>
+          <div class="product-info">
+            <div class="skeleton skeleton-text" style="width: 80%; margin-top: 5px;"></div>
+            <div class="skeleton skeleton-text" style="width: 60%;"></div>
+            
+            <div class="price-row" style="margin-top: 15px;">
+              <div class="skeleton skeleton-text" style="width: 50%; height: 25px; margin: 0;"></div>
+              <div class="skeleton" style="width: 40px; height: 40px; border-radius: 50%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Grid -->
+      <div class="products-grid" *ngIf="!isLoading && products.length > 0">
+        <div *ngFor="let product of products" class="product-card glass-card">
+          <div class="product-image" [routerLink]="['/product', product.id]">
+            <img [src]="product.image || 'assets/hero_bag.png'" [alt]="product.name">
+            <span class="badge" *ngIf="product.category">{{ product.category }}</span>
+          </div>
+          
+          <div class="product-info">
+            <h3 [routerLink]="['/product', product.id]">{{ product.name }}</h3>
+            <div class="price-row">
+              <p class="price">{{ product.price | number }}₫</p>
+              <button class="btn-add" (click)="addToCart(product)" title="Thêm vào giỏ">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div class="pagination-controls" *ngIf="totalItems > pageSize">
+        <button class="page-btn" [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">
+          « Trước
+        </button>
+        
+        <span class="page-info">
+          Trang {{ currentPage }} / {{ Math.ceil(totalItems / pageSize) }}
+        </span>
+        
+        <button class="page-btn" [disabled]="currentPage === Math.ceil(totalItems / pageSize)" (click)="changePage(currentPage + 1)">
+          Sau »
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
