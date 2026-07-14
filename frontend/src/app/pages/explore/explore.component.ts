@@ -40,7 +40,6 @@ export class ExploreComponent implements OnInit, AfterViewInit {
       description: 'Huyền thoại bánh tráng trộn Sài Gòn. Nước bò cực đỉnh, topping ngập tràn, xoài chua vừa tới. Xứng đáng chờ đợi dù hơi đông!',
       rating: 4.8,
       images: [
-        'https://images.unsplash.com/photo-1594921671911-c918a5f0391f?q=80&w=600&auto=format&fit=crop', // Placeholder for street food
         'https://images.unsplash.com/photo-1555126634-323283e090fa?q=80&w=600&auto=format&fit=crop'
       ]
     },
@@ -105,7 +104,10 @@ export class ExploreComponent implements OnInit, AfterViewInit {
         description: `Quán bánh tráng trộn ngẫu nhiên số ${i} mang hương vị đặc biệt. Tuyệt vời để thưởng thức cùng bạn bè!`,
         rating: parseFloat((Math.random() * 1.5 + 3.5).toFixed(1)), // 3.5 to 5.0
         images: [
-          'https://images.unsplash.com/photo-1555126634-323283e090fa?q=80&w=600&auto=format&fit=crop'
+          'https://images.unsplash.com/photo-1555126634-323283e090fa?q=80&w=600&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=600&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?q=80&w=600&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=600&auto=format&fit=crop'
         ]
       });
     }

@@ -310,29 +310,36 @@
   .image-gallery {
     display: flex;
     overflow-x: auto;
-    gap: 12px;
-    margin-top: 0.5rem;
-    margin-bottom: 1.5rem; /* added space below images */
-    padding-bottom: 8px; /* space for scrollbar */
+    overflow-y: hidden;
+    gap: 16px;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem; 
+    padding: 10px 10px 20px 10px; /* generous space for drop shadows */
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-
+    align-items: center;
+    
+    /* Hide scrollbar completely for a cleaner look */
     &::-webkit-scrollbar {
-      height: 6px;
+      display: none;
     }
-    &::-webkit-scrollbar-thumb {
-      background: rgba(0,0,0,0.15);
-      border-radius: 10px;
-    }
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 
     img {
-      width: 120px;
-      height: 120px;
+      width: 140px;
+      height: 140px;
       flex: 0 0 auto;
       object-fit: cover;
-      border-radius: 12px;
+      border-radius: 16px;
       scroll-snap-align: start;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(0,0,0,0.05);
+      transition: transform 0.2s ease;
+
+      &:active {
+        transform: scale(0.95);
+      }
     }
   }
 
@@ -479,23 +486,6 @@
       }
     }
 
-    .image-gallery {
-      height: 120px;
-
-      /* Drag handle indicator */
-      &::before {
-        content: '';
-        position: absolute;
-        top: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 40px;
-        height: 5px;
-        background: rgba(255, 255, 255, 0.8);
-        border-radius: 10px;
-        z-index: 20;
-      }
-    }
 
     .info-section {
       padding: 1.25rem;
