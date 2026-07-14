@@ -118,7 +118,9 @@ export class ExploreComponent implements OnInit, AfterViewInit {
   }
 
   private async initMap(): Promise<void> {
-    const L = await import('leaflet');
+    const leafletModule = await import('leaflet');
+    const L = leafletModule.default || leafletModule;
+    (window as any).L = L;
     
     // Khởi tạo bản đồ, focus về khu vực TP.HCM
     this.map = L.map('map', {
