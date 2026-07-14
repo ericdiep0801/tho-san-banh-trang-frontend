@@ -347,7 +347,7 @@
     .nav-links {
       display: flex;
       position: absolute;
-      top: 110px; /* Below the taller header */
+      top: 60px; /* Below the header */
       left: 15px;
       right: 15px;
       width: auto;
@@ -395,12 +395,6 @@
     }
   }
 
-  .premium-header.explore-mode {
-    .nav-links {
-      top: 70px; /* Bring closer to header when search is absent */
-    }
-  }
-
   .menu-backdrop {
     position: fixed;
     top: 60px; /* Below the header */
@@ -413,17 +407,9 @@
     z-index: 1500; /* Below header but above everything else */
     animation: fadeIn 0.3s ease;
   }
-  
-  .premium-header:not(.explore-mode) ~ .menu-backdrop {
-    top: 110px; /* Below taller header */
-  }
 
   .main-content {
-    padding-top: 110px; /* Taller header with search */
-    
-    &.explore-mode {
-      padding-top: 60px; /* Shorter header without search */
-    }
+    padding-top: 60px; /* Header without search */
   }
 }
 
