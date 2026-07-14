@@ -303,6 +303,11 @@
 
   .header-left {
     flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row-reverse; /* Swap hamburger and logo */
+    
     .hamburger {
       display: flex;
     }

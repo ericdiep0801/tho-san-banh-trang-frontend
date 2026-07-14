@@ -30,15 +30,19 @@
     <div class="header-right">
       <!-- Desktop Nav Links -->
       <nav class="nav-links" [class.open]="isMenuOpen">
+        <!-- Tạm ẩn trang chủ
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
           (click)="toggleMenu()">Trang Chủ</a>
+        -->
         <a routerLink="/explore" routerLinkActive="active" (click)="toggleMenu()">Khám Phá</a>
+        <!-- Tạm ẩn tính năng mua hàng
         <a routerLink="/products" routerLinkActive="active" (click)="toggleMenu()">Sản Phẩm</a>
+        -->
       </nav>
 
+      <!-- Tạm ẩn tính năng mua hàng 
       <div class="divider"></div>
-
-      <!-- Actions (Always visible) -->
+      
       <div class="header-actions">
         <a *ngIf="!authService.isLoggedIn" (click)="showLoginModal = true; isMenuOpen = false" class="action-btn">
           <div class="icon-wrapper">
@@ -74,6 +78,7 @@
           <span class="action-text">Giỏ hàng</span>
         </a>
       </div>
+      -->
     </div>
   </div>
 </header>
@@ -92,6 +97,7 @@
       <p>Chuyên cung cấp các loại bánh tráng Tây Ninh ngon, chuẩn vị. Đảm bảo chất lượng và an toàn vệ sinh thực phẩm.</p>
     </div>
     
+    <!-- Tạm ẩn thông tin bán hàng
     <div class="footer-contact">
       <h3>Liên hệ đặt hàng</h3>
       <div class="contact-info">
@@ -103,6 +109,7 @@
         </a>
       </div>
     </div>
+    -->
 
     <div class="footer-social">
       <h3>Kết nối với chúng tôi</h3>

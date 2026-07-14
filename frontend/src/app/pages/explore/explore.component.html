@@ -34,11 +34,6 @@
         </button>
 
         <div class="panel-content">
-          <div class="image-gallery">
-            <img *ngFor="let img of selectedLocation.images; let first = first" [src]="img" [class.main-img]="first"
-              alt="{{ selectedLocation.name }}">
-          </div>
-
           <div class="info-section">
             <h2>{{ selectedLocation.name }}</h2>
             <div class="rating-address">
@@ -59,6 +54,16 @@
             <div class="review-section">
               <h3>Trải nghiệm của Thợ Săn</h3>
               <p class="review-text">"{{ selectedLocation.description }}"</p>
+            </div>
+            
+            <div class="divider" *ngIf="selectedLocation.images && selectedLocation.images.length > 0"></div>
+
+            <div class="review-section" *ngIf="selectedLocation.images && selectedLocation.images.length > 0">
+              <h3>Hình ảnh thực tế</h3>
+              <div class="image-gallery">
+                <img *ngFor="let img of selectedLocation.images" [src]="img"
+                  alt="{{ selectedLocation.name }}">
+              </div>
             </div>
           </div>
         </div>

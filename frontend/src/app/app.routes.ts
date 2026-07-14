@@ -8,12 +8,12 @@ import { OrdersComponent } from './pages/orders/orders.component';
 import { ExploreComponent } from './pages/explore/explore.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', redirectTo: 'explore', pathMatch: 'full' },
   { path: 'explore', component: ExploreComponent },
   { path: 'products', component: ProductsComponent },
   { path: 'product/:id', component: ProductDetailComponent },
   { path: 'cart', component: CartComponent },
   { path: 'checkout', component: CheckoutComponent },
   { path: 'orders', component: OrdersComponent },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: 'explore' }
 ];
