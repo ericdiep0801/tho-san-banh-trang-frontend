@@ -80,6 +80,37 @@
   pointer-events: none;
 }
 
+.floating-reload-btn {
+  position: absolute;
+  bottom: 6.5rem;
+  left: 2rem;
+  z-index: 1000;
+  background: white;
+  color: var(--primary-color);
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #fdfdfd;
+    transform: scale(1.1);
+  }
+
+  @media (max-width: 768px) {
+    bottom: 5rem;
+    left: 1rem;
+    width: 40px;
+    height: 40px;
+  }
+}
+
 .floating-add-btn {
   position: absolute;
   bottom: 2rem;

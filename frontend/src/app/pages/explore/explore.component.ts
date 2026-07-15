@@ -1,6 +1,7 @@
 import { Component, OnInit, AfterViewInit, PLATFORM_ID, Inject, NgZone } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from '../../services/toast.service';
 
 // Define the interface for our location data
 export interface BanhTrangLocation {
@@ -49,7 +50,8 @@ export class ExploreComponent implements OnInit, AfterViewInit {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private toastService: ToastService
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
@@ -342,11 +344,16 @@ export class ExploreComponent implements OnInit, AfterViewInit {
         this.refreshMarkers();
       }
       
-      alert('Đã thêm vị trí thành công!');
+      this.toastService.show('Đã thêm vị trí thành công!', 'success');
       this.closeAddLocationForm();
     } catch (error) {
       console.error(error);
       this.errorMessage = 'Có lỗi xảy ra khi thêm vị trí!';
     }
+  }
+
+  public reloadMap(): void {
+    this.fetchLocations();
+    this.toastService.show('Đã tải lại bản đồ!', 'info');
   }
 }
