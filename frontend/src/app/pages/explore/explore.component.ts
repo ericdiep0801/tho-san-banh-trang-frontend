@@ -5,7 +5,8 @@ import { ToastService } from '../../services/toast.service';
 
 // Define the interface for our location data
 export interface BanhTrangLocation {
-  id: string;
+  id?: string;
+  locationNumber?: number;
   name: string;
   lat: number;
   lng: number;
@@ -123,13 +124,15 @@ export class ExploreComponent implements OnInit, AfterViewInit {
 
   private addMarkers(L: any): void {
     this.locations.forEach((location, index) => {
+      const displayNum = location.locationNumber || (index + 1);
+      
       // Custom Icon for Banh Trang points with number
       const customIcon = L.divIcon({
         className: 'custom-map-marker',
         html: `
           <div class="marker-wrapper">
             <div class="marker-pin"></div>
-            <div class="marker-number">${index + 1}</div>
+            <div class="marker-number">${displayNum}</div>
           </div>
           <div class="marker-pulse"></div>
         `,
@@ -138,7 +141,7 @@ export class ExploreComponent implements OnInit, AfterViewInit {
       });
 
       const marker = L.marker([location.lat, location.lng], { icon: customIcon }).addTo(this.map);
-      this.markerMap.set((index + 1).toString(), marker);
+      this.markerMap.set(displayNum.toString(), marker);
       
       marker.on('click', () => {
         this.ngZone.run(() => {
@@ -274,8 +277,10 @@ export class ExploreComponent implements OnInit, AfterViewInit {
         }
       });
 
-      const locIndex = parseInt(searchStr, 10) - 1;
-      const location = this.locations[locIndex];
+      const location = this.locations.find(l => {
+        const num = l.locationNumber || (this.locations.indexOf(l) + 1);
+        return num.toString() === searchStr;
+      });
 
       if (location) {
         this.ngZone.run(() => {
