@@ -1,8 +1,8 @@
 <div class="explore-container">
   <!-- Local Search -->
   <div class="map-search">
-    <input type="text" [(ngModel)]="searchId" (keyup.enter)="onSearch()" placeholder="Nhập số thứ tự (vd: 1, 100)...">
-    <button (click)="onSearch()">
+    <input type="text" [(ngModel)]="searchId" (keyup.enter)="onSearch()" placeholder="Nhập số thứ tự (vd: 1, 100)..." autocomplete="off">
+    <button type="button" (click)="onSearch()" class="search-btn">
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="8"></circle>
@@ -10,6 +10,15 @@
       </svg>
     </button>
   </div>
+  <div class="search-error" *ngIf="searchError">{{ searchError }}</div>
+
+  <button type="button" class="floating-add-btn" (click)="promptAdminPassword()" title="Thêm vị trí">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+  </button>
 
   <!-- Map Element -->
   <div id="map" class="map-wrapper"></div>
@@ -23,50 +32,121 @@
   <!-- Detail Panel -->
   <div class="detail-panel" [class.open]="showPanel" *ngIf="selectedLocation || showPanel">
     <div class="panel-inner glass-effect" *ngIf="selectedLocation">
-      <div class="panel-inner glass-effect" *ngIf="selectedLocation">
-        <!-- Close Button -->
-        <button class="close-btn" (click)="closePanel()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
+      <!-- Close Button -->
+      <button type="button" class="close-btn" (click)="closePanel()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
 
-        <div class="panel-content">
-          <div class="info-section">
-            <h2>{{ selectedLocation.name }}</h2>
-            <div class="rating-address">
-              <div class="address-container" (click)="getDirections()">
-                <button class="map-icon-btn" title="Chỉ đường đến đây">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                    <circle cx="12" cy="10" r="3"></circle>
-                  </svg>
-                </button>
-                <span class="address-text">{{ selectedLocation.address }}</span>
-              </div>
+      <div class="panel-content">
+        <div class="info-section">
+          <h2>{{ selectedLocation.name }}</h2>
+          <div class="rating-address">
+            <div class="address-container" (click)="getDirections()">
+              <button type="button" class="map-icon-btn" title="Chỉ đường đến đây">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+              </button>
+              <span class="address-text">{{ selectedLocation.address }}</span>
             </div>
+          </div>
 
-            <div class="divider"></div>
+          <div class="divider"></div>
 
-            <div class="review-section">
-              <h3>Trải nghiệm của Thợ Săn</h3>
-              <p class="review-text">"{{ selectedLocation.description }}"</p>
-            </div>
-            
-            <div class="divider" *ngIf="selectedLocation.images && selectedLocation.images.length > 0"></div>
+          <div class="review-section">
+            <h3>Trải nghiệm của Thợ Săn</h3>
+            <p class="review-text">"{{ selectedLocation.description }}"</p>
+          </div>
+          
+          <div class="divider" *ngIf="selectedLocation.images && selectedLocation.images.length > 0"></div>
 
-            <div class="review-section" *ngIf="selectedLocation.images && selectedLocation.images.length > 0">
-              <h3>Hình ảnh thực tế</h3>
-              <div class="image-gallery">
-                <img *ngFor="let img of selectedLocation.images" [src]="img"
-                  alt="{{ selectedLocation.name }}">
-              </div>
+          <div class="review-section" *ngIf="selectedLocation.images && selectedLocation.images.length > 0">
+            <h3>Hình ảnh thực tế</h3>
+            <div class="image-gallery">
+              <img *ngFor="let img of selectedLocation.images" [src]="img"
+                alt="{{ selectedLocation.name }}">
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Password Prompt Modal -->
+  <div class="add-location-modal" *ngIf="showPasswordPrompt">
+    <div class="modal-content glass-effect" style="max-width: 400px; text-align: center;">
+      <button type="button" class="close-btn" (click)="closePasswordPrompt()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <h2>Xác thực Quyền</h2>
+      <p style="margin-bottom: 1.5rem; color: var(--text-dark);">Vui lòng nhập mật khẩu để thêm địa điểm mới.</p>
+      
+      <div class="error-message" *ngIf="passwordError" style="text-align: left;">
+        {{ passwordError }}
+      </div>
+      
+      <div class="form-group" style="text-align: left;">
+        <input type="password" [(ngModel)]="adminPasswordInput" (keyup.enter)="verifyPassword()" placeholder="Nhập mật khẩu..." autocomplete="new-password">
+      </div>
+      <div class="form-actions" style="justify-content: center; margin-top: 1.5rem;">
+        <button type="button" class="btn-submit" (click)="verifyPassword()">Xác nhận</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Location Form Modal -->
+  <div class="add-location-modal" *ngIf="showAddLocationForm">
+    <div class="modal-content glass-effect">
+      <button type="button" class="close-btn" (click)="closeAddLocationForm()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <h2>Thêm Vị Trí Mới</h2>
+      
+      <!-- Error Message -->
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+      
+      <div class="form-group">
+        <label>Tên địa điểm</label>
+        <input type="text" [(ngModel)]="newLocation.name" placeholder="Ví dụ: Bánh Tráng Trộn Chú Viên...">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Vĩ độ (Latitude)</label>
+          <input type="number" [(ngModel)]="newLocation.lat" placeholder="10.762622">
+        </div>
+        <div class="form-group">
+          <label>Kinh độ (Longitude)</label>
+          <input type="number" [(ngModel)]="newLocation.lng" placeholder="106.681121">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Địa chỉ</label>
+        <input type="text" [(ngModel)]="newLocation.address" placeholder="Nhập địa chỉ đầy đủ...">
+      </div>
+      <div class="form-group">
+        <label>Mô tả / Đánh giá</label>
+        <textarea [(ngModel)]="newLocation.description" placeholder="Mô tả về địa điểm này..." rows="3"></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" (click)="closeAddLocationForm()">Hủy</button>
+        <button type="button" class="btn-submit" (click)="submitNewLocation()">Lưu Vị Trí</button>
+      </div>
+    </div>
+  </div>
+</div>

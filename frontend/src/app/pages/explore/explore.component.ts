@@ -28,59 +28,24 @@ export class ExploreComponent implements OnInit, AfterViewInit {
   private markerMap: Map<string, any> = new Map();
   public selectedLocation: BanhTrangLocation | null = null;
   public showPanel: boolean = false;
+  
+  public showAddLocationForm: boolean = false;
+  public newLocation = {
+    name: '',
+    lat: null as number | null,
+    lng: null as number | null,
+    address: '',
+    description: ''
+  };
+  public searchError: string = '';
+  public errorMessage: string = '';
 
-  // Mock data for places you've eaten Banh Trang Tron
-  public locations: BanhTrangLocation[] = [
-    {
-      id: '1',
-      name: 'Bánh Tráng Trộn Chú Viên',
-      lat: 10.762622,
-      lng: 106.681121,
-      address: '38 Nguyễn Thượng Hiền, Phường 5, Quận 3, TP. HCM',
-      description: 'Huyền thoại bánh tráng trộn Sài Gòn. Nước bò cực đỉnh, topping ngập tràn, xoài chua vừa tới. Xứng đáng chờ đợi dù hơi đông!',
-      rating: 4.8,
-      images: [
-        'https://images.unsplash.com/photo-1555126634-323283e090fa?q=80&w=600&auto=format&fit=crop'
-      ]
-    },
-    {
-      id: '2',
-      name: 'Bánh Tráng Trộn Cô Long',
-      lat: 10.761502,
-      lng: 106.680012,
-      address: '34 Nguyễn Thượng Hiền, Phường 5, Quận 3, TP. HCM',
-      description: 'Nằm ngay đối diện Chú Viên. Vị êm hơn, ít cay hơn, thích hợp cho ai không ăn cay được nhiều. Bánh tráng mềm dẻo rất ngon.',
-      rating: 4.5,
-      images: [
-        'https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=600&auto=format&fit=crop'
-      ]
-    },
-    {
-      id: '3',
-      name: 'Bánh Tráng Cuốn Trứng Cút - Hồ Con Rùa',
-      lat: 10.782807,
-      lng: 106.695392,
-      address: 'Vòng xoay Công Trường Quốc Tế, Quận 3, TP. HCM',
-      description: 'Ngồi hồ hóng gió và thưởng thức cuốn bánh tráng trứng cút bơ siêu béo ngậy. Tuyệt vời cho những buổi chiều rảnh rỗi.',
-      rating: 4.6,
-      images: [
-        'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=600&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1552539618-7eec9b4d1796?q=80&w=600&auto=format&fit=crop'
-      ]
-    },
-    {
-      id: '4',
-      name: 'Bánh Tráng Trộn Dì Hồng',
-      lat: 10.755255,
-      lng: 106.666991,
-      address: 'Đường Tôn Đản, Quận 4, TP. HCM',
-      description: 'Nổi tiếng với mỡ hành siêu thơm và tóp mỡ giòn rụm. Vị mặn mặn ngọt ngọt cực kỳ cuốn. Ăn là ghiền!',
-      rating: 4.7,
-      images: [
-        'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?q=80&w=600&auto=format&fit=crop'
-      ]
-    }
-  ];
+  public showPasswordPrompt: boolean = false;
+  public adminPasswordInput: string = '';
+  public passwordError: string = '';
+
+  public locations: BanhTrangLocation[] = [];
+  private apiUrl = 'https://tho-san-banh-trang-backend.onrender.com/api/locations';
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -90,26 +55,36 @@ export class ExploreComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    // Generate 100 mock locations for testing
-    for (let i = 5; i <= 104; i++) {
-      const latOffset = (Math.random() - 0.5) * 0.15; // roughly 15km spread around HCMC
-      const lngOffset = (Math.random() - 0.5) * 0.15;
+    this.fetchLocations();
+  }
 
-      this.locations.push({
-        id: i.toString(),
-        name: `Tiệm Bánh Tráng Trộn Số ${i}`,
-        lat: 10.762622 + latOffset,
-        lng: 106.681121 + lngOffset,
-        address: `Hẻm ${i} Góc Phố Sài Gòn, TP. HCM`,
-        description: `Quán bánh tráng trộn ngẫu nhiên số ${i} mang hương vị đặc biệt. Tuyệt vời để thưởng thức cùng bạn bè!`,
-        rating: parseFloat((Math.random() * 1.5 + 3.5).toFixed(1)), // 3.5 to 5.0
-        images: [
-          'https://images.unsplash.com/photo-1555126634-323283e090fa?q=80&w=600&auto=format&fit=crop',
-          'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=600&auto=format&fit=crop',
-          'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?q=80&w=600&auto=format&fit=crop',
-          'https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=600&auto=format&fit=crop'
-        ]
-      });
+  private async fetchLocations(): Promise<void> {
+    try {
+      const response = await fetch(this.apiUrl);
+      if (!response.ok) throw new Error('Failed to fetch locations');
+      const data = await response.json();
+      this.locations = data;
+      
+      // If map is already initialized, refresh markers
+      if (this.map) {
+        this.refreshMarkers();
+      }
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+      // Fallback to empty or could show an error message
+    }
+  }
+
+  private refreshMarkers(): void {
+    // Remove existing markers
+    this.markerMap.forEach(marker => {
+      this.map.removeLayer(marker);
+    });
+    this.markerMap.clear();
+
+    const L = (window as any).L;
+    if (L) {
+      this.addMarkers(L);
     }
   }
 
@@ -261,6 +236,7 @@ export class ExploreComponent implements OnInit, AfterViewInit {
   }
 
   public onSearch(): void {
+    this.searchError = '';
     if (!this.searchId) return;
     
     const searchStr = this.searchId.trim();
@@ -306,7 +282,71 @@ export class ExploreComponent implements OnInit, AfterViewInit {
         });
       }
     } else {
-      alert('Không tìm thấy địa điểm mang số thứ tự này!');
+      this.searchError = 'Không tìm thấy địa điểm mang số thứ tự này!';
+    }
+  }
+
+  public promptAdminPassword(): void {
+    this.showPasswordPrompt = true;
+    this.adminPasswordInput = '';
+    this.passwordError = '';
+  }
+
+  public verifyPassword(): void {
+    if (this.adminPasswordInput === '180700') {
+      this.showPasswordPrompt = false;
+      this.openAddLocationForm();
+    } else {
+      this.passwordError = 'Mật khẩu không chính xác!';
+    }
+  }
+
+  public closePasswordPrompt(): void {
+    this.showPasswordPrompt = false;
+  }
+
+  public openAddLocationForm(): void {
+    this.showAddLocationForm = true;
+  }
+
+  public closeAddLocationForm(): void {
+    this.showAddLocationForm = false;
+    this.newLocation = { name: '', lat: null, lng: null, address: '', description: '' };
+    this.errorMessage = '';
+  }
+
+  public async submitNewLocation(): Promise<void> {
+    this.errorMessage = '';
+    if (!this.newLocation.name || !this.newLocation.lat || !this.newLocation.lng || !this.newLocation.address) {
+      this.errorMessage = 'Vui lòng điền đầy đủ các thông tin bắt buộc (Tên, Tọa độ, Địa chỉ)!';
+      return;
+    }
+
+    try {
+      const response = await fetch(this.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(this.newLocation)
+      });
+
+      if (!response.ok) {
+        throw new Error('Lỗi khi thêm vị trí');
+      }
+
+      const addedLocation = await response.json();
+      this.locations.push(addedLocation);
+      
+      if (this.map) {
+        this.refreshMarkers();
+      }
+      
+      alert('Đã thêm vị trí thành công!');
+      this.closeAddLocationForm();
+    } catch (error) {
+      console.error(error);
+      this.errorMessage = 'Có lỗi xảy ra khi thêm vị trí!';
     }
   }
 }
