@@ -1,0 +1,10 @@
+<div class="global-loading-overlay" *ngIf="isLoading$ | async">
+  <div class="global-loading-content">
+    <div class="spinner">
+      <svg viewBox="0 0 50 50">
+        <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle>
+      </svg>
+    </div>
+    <p class="loading-text">Đang tải...</p>
+  </div>
+</div>

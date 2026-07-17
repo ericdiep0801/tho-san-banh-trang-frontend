@@ -7,11 +7,12 @@ import { AuthService } from './services/auth.service';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
 import { ProfileModalComponent } from './components/profile-modal/profile-modal.component';
 import { ToastService } from './services/toast.service';
+import { GlobalLoadingComponent } from './components/global-loading/global-loading.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, FormsModule, AuthModalComponent, ProfileModalComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, FormsModule, AuthModalComponent, ProfileModalComponent, GlobalLoadingComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

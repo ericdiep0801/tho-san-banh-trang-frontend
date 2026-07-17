@@ -1,4 +1,15 @@
 <div class="explore-container">
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="loading-content">
+      <div class="loading-icon-wrapper">
+        <div class="loading-pin"></div>
+        <div class="loading-pulse"></div>
+      </div>
+      <p>Đang tải dữ liệu bản đồ...</p>
+    </div>
+  </div>
+
   <!-- Local Search -->
   <div class="map-search">
     <input type="text" [(ngModel)]="searchId" (keyup.enter)="onSearch()" placeholder="Nhập số thứ tự (vd: 1, 100)..." autocomplete="off">

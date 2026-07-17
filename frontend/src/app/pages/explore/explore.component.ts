@@ -30,6 +30,7 @@ export class ExploreComponent implements OnInit, AfterViewInit {
   private markerMap: Map<string, any> = new Map();
   public selectedLocation: BanhTrangLocation | null = null;
   public showPanel: boolean = false;
+  public isLoading: boolean = true;
   
   public showAddLocationForm: boolean = false;
   public newLocation = {
@@ -62,6 +63,7 @@ export class ExploreComponent implements OnInit, AfterViewInit {
   }
 
   private async fetchLocations(): Promise<void> {
+    this.isLoading = true;
     try {
       const response = await fetch(this.apiUrl);
       if (!response.ok) throw new Error('Failed to fetch locations');
@@ -75,6 +77,8 @@ export class ExploreComponent implements OnInit, AfterViewInit {
     } catch (error) {
       console.error('Error fetching locations:', error);
       // Fallback to empty or could show an error message
+    } finally {
+      this.isLoading = false;
     }
   }
 
